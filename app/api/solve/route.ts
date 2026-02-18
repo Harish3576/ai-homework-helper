@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { checkAndIncrementUsage } from "@/src/lib/usage";
 import { groqSolve } from "@/src/lib/groq";
