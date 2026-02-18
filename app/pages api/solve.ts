@@ -1,18 +1,18 @@
-import { NextResponse } from "next/server";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
-export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const question = body?.question;
+    const { question } = req.body;
 
     if (!question) {
-      return NextResponse.json(
-        { error: "Question required" },
-        { status: 400 }
-      );
+      return res.status(400).json({ error: "Question required" });
     }
 
     const response = await fetch(
@@ -38,14 +38,11 @@ export async function POST(request: Request) {
 
     const data = await response.json();
 
-    return NextResponse.json({
+    return res.status(200).json({
       answer:
         data?.choices?.[0]?.message?.content || "No response from model",
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
