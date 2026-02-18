@@ -1,14 +1,16 @@
-export const dynamic = "force-dynamic";
-
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+export async function POST(request: Request) {
   try {
-    const { question } = await req.json();
+    const body = await request.json();
+    const question = body?.question;
 
     if (!question) {
       return NextResponse.json(
-        { error: "Question is required" },
+        { error: "Question required" },
         { status: 400 }
       );
     }
@@ -37,11 +39,12 @@ export async function POST(req: Request) {
     const data = await response.json();
 
     return NextResponse.json({
-      answer: data.choices?.[0]?.message?.content || "No response",
+      answer:
+        data?.choices?.[0]?.message?.content || "No response from model",
     });
   } catch (error) {
     return NextResponse.json(
-      { error: "Server error" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
